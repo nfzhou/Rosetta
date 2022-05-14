@@ -9,7 +9,6 @@ main =>
              {13,14,15,0}},
     Goal = copy_term(Board),
     shuffle(Board),
-    print_board(Board),
     play(Board,Goal).
 
 shuffle(Board) =>
@@ -24,37 +23,19 @@ shuffle(Board) =>
     end.
 
 play(Board,Goal) =>
-    printf("This puzzle is %s solvable.\n", cond(is_solvable(Board), "", "not")),
     while (Board != Goal)
         print_board(Board),
         possible_moves(Board,R0,C0,Moves),
         printf("Possible moves are: %w, 0 to exit. Your move? =>  ", Moves),
-        S = read_line().strip().to_int(),
-        if S == 0 then
+        S = read_line().strip(),
+        if S == "0" || S == "" then
             halt
         else
-            move_hole(Board,R0,C0,S)
+            move_hole(Board,R0,C0,to_int(S))
         end
     end,
     print_board(Board),
     println("Puzzle solved.").
-
-is_solvable(Board) =>
-    N = len(Board),
-    A = {Board[R,C] : R in 1..N, C in 1..N},
-    InversionCount = 0,
-    foreach (I in 1..len(A)-1, J in I..len(A), A[I] != 0, A[J] != 0)
-        if A[I] > A[J] then
-            InversionCount := InversionCount + 1
-        end
-    end,
-    if odd(N) then
-        even(InversionCount)
-    else
-        nth(HPos,A,0),
-        RHPos = len(A)-HPos+1,
-        (even(RHPos) && odd(InversionCount)    || odd(RHPos) && even(InversionCount))
-    end.
 
 print_board(Board) =>
     N = len(Board),
